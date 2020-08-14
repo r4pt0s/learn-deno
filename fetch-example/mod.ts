@@ -11,7 +11,7 @@ interface Launch{
 
 const launches = new Map<number, Launch>();
 
-async function downloadLaunchData(){
+export async function downloadLaunchData(){
   log.info("Downloading launch data...");
   const response= await fetch("https://api.spacexdata.com/v3/launches");
 
@@ -22,7 +22,7 @@ async function downloadLaunchData(){
 
   const launchData= await response.json();
   for (const launch of launchData){
-    const payloads=  launch["rocket"]["second_stage"]["payload"];
+    const payloads=  launch["rocket"]["second_stage"]["payloads"];
     const customers = _.flatMap(payloads, (payload: any) => payload['customers']);
 
     const flightData = {
@@ -38,5 +38,10 @@ async function downloadLaunchData(){
   console.log(launches)
 }
 
+if(import.meta.main){
 
-downloadLaunchData()
+  await downloadLaunchData()
+  log.info(JSON.stringify(import.meta));
+  log.info(`Dowloaded data for ${launches.size} SpaceX launches`);
+}
+
